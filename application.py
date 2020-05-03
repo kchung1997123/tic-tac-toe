@@ -26,3 +26,9 @@ def play(row, col):
     else:
         session["turn"] = "X"
     return redirect(url_for("index"))
+
+@app.route("/reset")
+def reset():
+    session["board"] = [[None, None, None], [None, None, None], [None, None, None]]
+    session["turn"] = "X"
+    return render_template("game.html", game=session["board"], turn=session["turn"])

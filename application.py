@@ -22,7 +22,7 @@ def index():
 def play(row, col):
     session["board"][row][col] = session["turn"]
     if session["turn"] == "X":
-        session["turn"] = "Y"
+        session["turn"] = "O"
     else:
         session["turn"] = "X"
     return redirect(url_for("index"))

@@ -19,6 +19,9 @@
         </style>
     </head>
     <body>
+        {% if winner %}
+            <h2>Winner is {{ winner }}!</h2>
+        {% endif %}
         <table>
             {% for i in range(3) %}
                 <tr>

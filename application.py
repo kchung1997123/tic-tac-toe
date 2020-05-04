@@ -11,7 +11,7 @@ Session(app)
 
 history = []
 
-def check_victory(board):
+def get_winner(board):
     if board[0][0] != None and board[0][0] == board[1][1] == board[2][2]:
         return board[0][0]
 
@@ -42,7 +42,7 @@ def index():
         if not history:
             history.append(session["board"])
     
-    winner = check_victory(session["board"])
+    winner = get_winner(session["board"])
 
     return render_template("game.html", game=session["board"], turn=session["turn"], winner=winner, num_history=len(history))
 

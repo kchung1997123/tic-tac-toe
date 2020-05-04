@@ -38,5 +38,8 @@
             {% endfor %}
         </table>
         <button><a href="{{ url_for('reset') }}">RESET</a></button>
+        {% if num_history > 1 %}
+            <button><a href="{{ url_for('undo_move') }}">UNDO MOVE</a></button>
+        {% endif %}
     </body>
 </html>

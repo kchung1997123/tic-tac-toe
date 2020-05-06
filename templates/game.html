@@ -3,8 +3,13 @@
     <head>
         <title>Tic Tac Toe</title>
         <style>
+            body {
+                text-align: center;
+            }
             table {
                 border-collapse: collapse;
+                margin-left: auto;
+                margin-right: auto;
             }
             td {
                 border: 1px solid black;
@@ -19,6 +24,7 @@
         </style>
     </head>
     <body>
+        <h1>Tic Tac Toe</h1>
         {% if winner %}
             {% if winner == 'tie' %}
                 <h2>Tie!</h2>
@@ -43,9 +49,9 @@
                 </tr>
             {% endfor %}
         </table>
-        <button><a href="{{ url_for('reset') }}">RESET</a></button>
+        <p><a href="{{ url_for('reset') }}">Reset Game</a></p>
         {% if num_history > 1 %}
-            <button><a href="{{ url_for('undo_move') }}">UNDO MOVE</a></button>
+            <p><a href="{{ url_for('undo_move') }}">Undo Move</a></p>
         {% endif %}
     </body>
 </html>

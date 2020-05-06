@@ -49,6 +49,7 @@
                 </tr>
             {% endfor %}
         </table>
+        <p><a href="{{ url_for('best_move') }}">Let Computer Move</a></p>
         <p><a href="{{ url_for('reset') }}">Reset Game</a></p>
         {% if num_history > 1 %}
             <p><a href="{{ url_for('undo_move') }}">Undo Move</a></p>

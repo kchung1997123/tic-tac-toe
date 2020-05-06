@@ -1,4 +1,3 @@
-flask
-flask_session
-tempfile
+Flask
+Flask-Session
 gunicorn

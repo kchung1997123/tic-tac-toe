@@ -139,7 +139,6 @@ def best_move():
                     score = minimax(board, "O")
                     board[i][j] = None
                     if score > best_score:
-                        print(score)
                         best_score = score
                         move = [i, j]
     else:

@@ -44,6 +44,43 @@ def get_winner():
     else:
         return winner
 
+def get_score(winner):
+    if winner == "X":
+        return 1
+    elif winner == "O":
+        return -1
+    else:
+        return 0
+
+def minimax(game, turn):
+    result = get_winner()
+    if result != None:
+        return get_score(result)
+
+    board = session["board"]
+    if turn == "X":
+        best_score = -math.inf
+        for i in range(3):
+            for j in range(3):
+                if board[i][j] == None:
+                    board[i][j] = turn
+                    score = minimax(board, "O")
+                    board[i][j] = None
+                    best_score = max(best_score, score)
+
+        return best_score
+    else:
+        best_score = math.inf
+        for i in range(3):
+            for j in range(3):
+                if board[i][j] == None:
+                    board[i][j] = turn
+                    score = minimax(board, "X")
+                    board[i][j] = None
+                    best_score = min(best_score, score)
+
+        return best_score
+
 def switch_turn():
     if session["turn"] == "X":
         session["turn"] = "O"
@@ -87,3 +124,38 @@ def undo_move():
         switch_turn()
 
     return redirect(url_for("index"))  
+
+@app.route("/best")
+def best_move():    
+    move = [None, None]
+    board = session["board"]
+
+    if session["turn"] == "X":
+        best_score = -math.inf
+        for i in range(3):
+            for j in range(3):
+                if board[i][j] == None:
+                    board[i][j] = session["turn"]
+                    score = minimax(board, "O")
+                    board[i][j] = None
+                    if score > best_score:
+                        print(score)
+                        best_score = score
+                        move = [i, j]
+    else:
+        best_score = math.inf
+        for i in range(3):
+            for j in range(3):
+                if board[i][j] == None:
+                    board[i][j] = session["turn"]
+                    score = minimax(board, "X")
+                    board[i][j] = None
+                    if score < best_score:
+                        best_score = score
+                        move = [i, j]
+
+    board[move[0]][move[1]] = session["turn"]
+    history.append(board)
+    switch_turn()    
+
+    return redirect(url_for("index"))

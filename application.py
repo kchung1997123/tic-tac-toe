@@ -2,6 +2,7 @@ from flask import Flask, render_template, session, redirect, url_for
 from flask_session import Session
 from tempfile import mkdtemp
 import math
+import copy
 
 app = Flask(__name__)
 
@@ -10,11 +11,7 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
-# Keep track history
-history = []
-
-def get_winner():
-    board = session["board"]
+def get_winner(board):
     winner = None
 
     # Diagonal
@@ -29,10 +26,12 @@ def get_winner():
         # Horizontal
         if board[i][0] == board[i][1] and board[i][0] == board[i][2]:
             winner = board[i][0]
+            break
 
         # Vertical
         if board[0][i] == board[1][i] and board[0][i] == board[2][i]:  
             winner = board[0][i]
+            break
 
     # Check open spots
     open_spots = 0
@@ -53,7 +52,7 @@ def get_score(winner):
         return 0
 
 def minimax(game, turn):
-    result = get_winner()
+    result = get_winner(game)
     if result != None:
         return get_score(result)
 
@@ -92,18 +91,20 @@ def index():
     if "board" not in session:
         session["board"] = [[None, None, None], [None, None, None], [None, None, None]]
         session["turn"] = "X"
+        session["history"] = []
 
-        if not history:
-            history.append(session["board"])
-    
-    winner = get_winner()
+        if not session["history"]:
+            session["history"].append(copy.deepcopy(session["board"]))
 
-    return render_template("game.html", game=session["board"], turn=session["turn"], winner=winner, num_history=len(history))
+    winner = get_winner(session["board"])
+    print(session["history"])
+
+    return render_template("game.html", game=session["board"], turn=session["turn"], winner=winner, num_history=len(session["history"]))
 
 @app.route("/play/<int:row>/<int:col>")
 def play(row, col):
     session["board"][row][col] = session["turn"]
-    history.append(session["board"]) 
+    session["history"].append(copy.deepcopy(session["board"]))
     switch_turn()
 
     return redirect(url_for("index"))
@@ -112,7 +113,7 @@ def play(row, col):
 def reset():
     del session["board"]
     del session["turn"]
-    history.clear()
+    del session["history"]
 
     return redirect(url_for("index"))
 
@@ -120,7 +121,7 @@ def reset():
 def undo_move():
     if len(history) > 1:
         history.pop()
-        session["board"] = history[-1]
+        session["board"] = session["history"][-1]
         switch_turn()
 
     return redirect(url_for("index"))  
@@ -132,29 +133,27 @@ def best_move():
 
     if session["turn"] == "X":
         best_score = -math.inf
-        for i in range(3):
-            for j in range(3):
-                if board[i][j] == None:
-                    board[i][j] = session["turn"]
+    else:
+        best_score = math.inf
+
+    for i in range(3):
+        for j in range(3):
+            if board[i][j] == None:
+                board[i][j] = session["turn"]
+
+                if session["turn"] == "X":
                     score = minimax(board, "O")
-                    board[i][j] = None
                     if score > best_score:
                         best_score = score
                         move = [i, j]
-    else:
-        best_score = math.inf
-        for i in range(3):
-            for j in range(3):
-                if board[i][j] == None:
-                    board[i][j] = session["turn"]
+                else:
                     score = minimax(board, "X")
-                    board[i][j] = None
                     if score < best_score:
                         best_score = score
                         move = [i, j]
+                
+                board[i][j] = None
 
-    board[move[0]][move[1]] = session["turn"]
-    history.append(board)
-    switch_turn()    
+    play(move[0], move[1])  
 
     return redirect(url_for("index"))

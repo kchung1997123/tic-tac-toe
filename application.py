@@ -97,7 +97,6 @@ def index():
             session["history"].append(copy.deepcopy(session["board"]))
 
     winner = get_winner(session["board"])
-    print(session["history"])
 
     return render_template("game.html", game=session["board"], turn=session["turn"], winner=winner, num_history=len(session["history"]))
 

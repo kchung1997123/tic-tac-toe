@@ -52,33 +52,32 @@ def get_score(winner):
         return 0
 
 def minimax(game, turn):
-    result = get_winner(game)
-    if result != None:
-        return get_score(result)
+    winner = get_winner(game)
+    if winner != None:
+        return get_score(winner)
 
     board = session["board"]
+
     if turn == "X":
         best_score = -math.inf
-        for i in range(3):
-            for j in range(3):
-                if board[i][j] == None:
-                    board[i][j] = turn
-                    score = minimax(board, "O")
-                    board[i][j] = None
-                    best_score = max(best_score, score)
-
-        return best_score
     else:
         best_score = math.inf
-        for i in range(3):
-            for j in range(3):
-                if board[i][j] == None:
-                    board[i][j] = turn
-                    score = minimax(board, "X")
-                    board[i][j] = None
-                    best_score = min(best_score, score)
 
-        return best_score
+    for i in range(3):
+        for j in range(3):
+            if board[i][j] == None:
+                board[i][j] = turn
+
+                if turn == "X":
+                    score = minimax(board, "O")
+                    best_score = max(best_score, score)
+                else:
+                    score = minimax(board, "X")
+                    best_score = min(best_score, score)
+                
+                board[i][j] = None
+
+    return best_score
 
 def switch_turn():
     if session["turn"] == "X":
